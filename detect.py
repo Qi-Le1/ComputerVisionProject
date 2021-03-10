@@ -3,7 +3,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.collections import PolyCollection
 sift = cv2.xfeatures2d.SIFT_create()
 
 
@@ -103,6 +103,8 @@ def superm2(image):
 
     def hex():
         plt.hexbin(houghr, houghth, bins=200)
+        # a = PolyCollection.get_offsets(return_xy)
+        # b = PolyCollection.get_array(return_xy)
         plt.show()
 
     hex()
@@ -112,8 +114,7 @@ def superm2(image):
 
 
 def draw(image, r, theta):
-    count1 = 0
-    count2 = 0
+
     div_list = []
     if np.pi / 4 < theta < 3 * (np.pi / 4):
         for x in range(len(image.T)):
@@ -121,17 +122,15 @@ def draw(image, r, theta):
             if 0 <= y < len(image.T[x]):
                 image[y][x] = 255
                 div_list.append([y, x])
-                count1 += 1
+
     else:
         for y in range(len(image)):
             x = int((r - y * np.sin(theta)) / np.cos(theta))
             if 0 <= x < len(image[y]):
                 image[y][x] = 255
                 div_list.append([y, x])
-                count2 += 1
 
-    print("count1",count1)
-    print("count2",count2)
+
     return div_list
 
 def div(image,div_list):
@@ -158,11 +157,15 @@ def div(image,div_list):
     max_diff = max(abs(max_y-most_y_value),abs(min_y-most_y_value))
     original_cut = most_y_value - max_diff
     reflection_cut = most_y_value + max_diff
+    if most_y_value >= 256:
+        reflection_img_depth = image.shape[0] - reflection_cut
 
-    reflection_img_depth = image.shape[0] - reflection_cut
-
-    original_image = image[original_cut - reflection_img_depth:original_cut, :]
-    reflection_image = image[reflection_cut:, :]
+        original_image = image[original_cut - reflection_img_depth:original_cut, :]
+        reflection_image = image[reflection_cut:, :]
+    else:
+        print("a")
+        original_image = image[:original_cut, :]
+        reflection_image = image[reflection_cut:reflection_cut + original_cut, :]
 
     return original_image, reflection_image
 
@@ -172,26 +175,32 @@ def main():
     #     print("Usage: python3 detect.py IMAGE [r] [theta]")
     #     return
     # if argc == 2:s
-    for filename in os.listdir(r"C:\Users\Lucky\PycharmProjects\symmetry\data\wudi\final dataset"):
-        print(filename)
-        # print(filename.shape)
-        filepath = "C:/Users/Lucky/PycharmProjects/symmetry/data/wudi/final dataset/" + filename
-        image = cv2.imread(filepath,0)
-        color_image = cv2.imread(filepath)
-        image
-        r, theta, weight = superm2(image)
-        div_list = draw(image, float(242), float(1.575))
-        original_image, reflection_image = div(color_image, div_list)
-        cv2.imwrite("original2.jpg", original_image)
-        cv2.imwrite("reflection2.jpg", reflection_image)
-        #
-        cv2.imshow("a", image)
-        #
-        cv2.imshow("b", original_image)
+    # for filename in os.listdir("C:/Users/Lucky/PycharmProjects/symmetry/ComputerVisionProject/data/final dataset/"):
 
-        cv2.imshow("c", reflection_image)
-        #
-        cv2.waitKey(0)
+    filename = "10 (29).jpg"
+    # print(filename.shape)
+    filepath = "C:/Users/Lucky/PycharmProjects/symmetry/ComputerVisionProject/data/final dataset/" + filename
+    image = cv2.imread(filepath,0)
+    color_image = cv2.imread(filepath)
+
+    r, theta, weight = superm2(image)
+
+    div_list = draw(image, float(263), float(1.565))
+    original_image, reflection_image = div(color_image, div_list)
+    cv2.imshow("a", image)
+
+    count = 29
+
+    cv2.imwrite("C:/Users/Lucky/PycharmProjects/symmetry/ComputerVisionProject/data/final dataset/test(original object)/original{}.jpg".format(count), original_image)
+    cv2.imwrite("C:/Users/Lucky/PycharmProjects/symmetry/ComputerVisionProject/data/final dataset/training(reflection part)/reflection{}.jpg".format(count), reflection_image)
+    #
+
+    #
+    cv2.imshow("b", original_image)
+
+    cv2.imshow("c", reflection_image)
+    #
+    cv2.waitKey(0)
         # print(1)
     # elif argc == 4:
     #     image = cv2.imread(sys.argv[1], 0)
