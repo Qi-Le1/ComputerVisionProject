@@ -15,12 +15,12 @@ for filename in glob.glob('*.jpg'):
     #percent by which the image is resized
     scale_percent = 15
 
-    if src.shape[1] < 512 or src.shape[0] < 512:
+    if src.shape[1] < 512 or src.shape[0] < 251:
         pass
     else:
         #calculate the 50 percent of original dimensions
         width = 512
-        height = 512
+        height = 251
         # dsize
 
         dsize = (width, height)
