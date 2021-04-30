@@ -15,17 +15,15 @@ for filename in glob.glob('*.jpg'):
     #percent by which the image is resized
     scale_percent = 15
 
-    if src.shape[1] < 512 or src.shape[0] < 251:
-        pass
-    else:
-        #calculate the 50 percent of original dimensions
-        width = 512
-        height = 251
-        # dsize
 
-        dsize = (width, height)
+    #calculate the 50 percent of original dimensions
+    width = 512
+    height = 251
+    # dsize
 
-        # resize image
-        output = cv2.resize(src, dsize)
+    dsize = (width, height)
+
+    # resize image
+    output = cv2.resize(src, dsize)
 
     cv2.imwrite(os.path.join(new_path,filename),output)
